@@ -187,6 +187,28 @@ tools/build.mjs       單檔打包腳本
   pages.yml           推上 main 時自動部署到 GitHub Pages
 ```
 
+## 部署到 GitHub Pages
+
+推上 `main` 時，`.github/workflows/pages.yml` 會自動把 `index.html`、`notequest.html`
+與 `css/`、`js/` 發佈到 GitHub Pages。
+
+**第一次需要手動開啟一次 Pages**（只做一次）：
+
+1. 到 repo 的 **Settings → Pages**
+2. **Source** 選擇 **GitHub Actions**
+3. 回到 **Actions** 分頁，把失敗的那次 workflow 重跑（Re-run all jobs）
+
+> 為什麼不能全自動？建立 Pages 站台的 API 需要 repo admin 權限，
+> workflow 的 `GITHUB_TOKEN` 拿不到，所以 `actions/configure-pages` 的
+> `enablement: true` 會失敗在 `Resource not accessible by integration`。
+> 站台開好之後，之後每次推 `main` 都會自動部署，不用再手動處理。
+
+如果不想用 Actions，也可以改成 **Settings → Pages → Source → Deploy from a branch**，
+選 `main` / `/ (root)`。網站檔案本來就放在 repo 根目錄，`.nojekyll` 也已經包含在內，
+這樣就完全不需要這個 workflow（記得把 `pages.yml` 刪掉，否則每次推 `main` 都會失敗）。
+
+---
+
 ## 瀏覽器需求
 
 Chrome / Edge / Safari / Firefox 皆可。
