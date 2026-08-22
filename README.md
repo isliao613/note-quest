@@ -12,7 +12,13 @@
 ### 方式一：線上打開
 
 直接連 <https://isliao613.github.io/note-quest/>，手機、平板、電腦都可以。
-在 iPad 上用 Safari 開啟後選「加入主畫面」，用起來就跟一般 App 一樣。
+
+**在 iPad / iPhone 上裝成全螢幕 App**：用 **Safari** 開啟 → 分享 → **加入主畫面**。
+之後從主畫面點圖示啟動，會以 standalone 模式全螢幕執行，**沒有網址列也沒有工具列**，
+只剩系統狀態列（時間與電量），而且狀態列底色會跟著小朋友／大人模式自動切換。
+
+> 一定要用 Safari。Chrome、Edge 等第三方瀏覽器在 iOS 上加到主畫面只會存成書籤，
+> 點開仍然會帶著瀏覽器介面。Android 則用 Chrome 的「安裝應用程式」。
 
 ### 方式二：離線單檔
 
@@ -182,10 +188,29 @@ js/
     free.js           自由彈奏（和弦辨識、錄音回放）
     theorylab.js      音階與和弦實驗室
     editor.js         自訂曲目編輯器
+manifest.webmanifest  PWA 設定（全螢幕啟動、圖示）
+assets/               App 圖示（icon.svg 為原始檔）
 tools/build.mjs       單檔打包腳本
+tools/make-icons.mjs  從 icon.svg 產生各尺寸 PNG
 .github/workflows/
   pages.yml           推上 main 時自動部署到 GitHub Pages
 ```
+
+## 全螢幕 / 安裝
+
+`manifest.webmanifest` 宣告 `display: standalone`，並搭配 Apple 的
+`apple-mobile-web-app-capable` 讓舊版 iOS 也能全螢幕啟動。
+圖示由 `assets/icon.svg` 產生，要重新產生時：
+
+```bash
+npm i -D playwright
+node tools/make-icons.mjs      # 產生 assets/icon-180/192/512 與 maskable 版本
+```
+
+單檔版（`notequest.html`）沒有相鄰檔案可以載，打包時會自動移除 manifest 連結、
+把圖示改成內嵌的 data URI，一樣可以在 iOS 上全螢幕啟動。
+
+---
 
 ## 部署到 GitHub Pages
 

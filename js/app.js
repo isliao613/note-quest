@@ -501,8 +501,14 @@ function updateMidiStatus() {
 
 /* ---------- 主題與鍵盤設定 ---------- */
 
+const THEME_COLORS = { kid: '#fff7ed', adult: '#0f172a' };
+
 export function applyTheme() {
-  document.body.dataset.theme = progress.data.mode;
+  const mode = progress.data.mode;
+  document.body.dataset.theme = mode;
+  // 加到主畫面全螢幕啟動時，狀態列底色要跟著主題換，字才看得清楚
+  const meta = $('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', THEME_COLORS[mode] ?? THEME_COLORS.kid);
 }
 
 export function applyKeyboardSettings() {

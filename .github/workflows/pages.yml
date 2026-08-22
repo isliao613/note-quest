@@ -37,8 +37,8 @@ jobs:
       - name: 整理要發佈的檔案
         run: |
           mkdir -p _site
-          cp index.html notequest.html _site/
-          cp -r css js _site/
+          cp index.html notequest.html manifest.webmanifest _site/
+          cp -r css js assets _site/
           # 讓 Jekyll 不要處理這些檔案
           touch _site/.nojekyll
           ls -R _site | head -40
