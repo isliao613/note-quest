@@ -384,6 +384,10 @@ function renderSettings() {
         <button class="switch ${s.waitMode ? 'on' : ''}" id="set-wait"></button>
       </div>
       <div class="setting-row">
+        <div class="label"><b>專注模式</b><small>收起返回、設定與底部分頁，避免小朋友誤觸跳走</small></div>
+        <button class="switch ${s.focusLock ? 'on' : ''}" id="set-lock"></button>
+      </div>
+      <div class="setting-row">
         <div class="label"><b>鍵盤範圍</b><small>螢幕鋼琴要顯示幾個八度</small></div>
         <select id="set-range">
           <option value="55,79" ${s.range[0] === 55 ? 'selected' : ''}>2 個八度（小螢幕）</option>
@@ -402,6 +406,16 @@ function renderSettings() {
         <select id="set-midi-dev" hidden></select>
       </div>
       <p class="muted" id="midi-status" style="font-size:.78rem;margin:10px 0 0"></p>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h3 style="font-size:.98rem;margin-bottom:4px">讓小朋友不會亂跳出去</h3>
+      <p class="muted" style="font-size:.78rem;line-height:1.8;margin:0">
+        <b>專注模式</b>會把 App 裡會跳走的入口收起來。<br>
+        想連整台 iPad 都鎖住（連home鍵、通知、其他 App 都碰不到），可以用 iOS 內建的
+        <b>引導式取用</b>：設定 → 輔助使用 → 引導式取用打開後，
+        在 App 裡連按三下側邊鍵即可鎖定，再連按三下並輸入密碼解除。
+      </p>
     </div>
 
     <div class="card" style="margin-top:14px">
@@ -445,6 +459,13 @@ function renderSettings() {
     const on = !progress.settings.waitMode;
     progress.setSetting('waitMode', on);
     e.target.classList.toggle('on', on);
+  };
+  $('#set-lock').onclick = (e) => {
+    const on = !progress.settings.focusLock;
+    progress.setSetting('focusLock', on);
+    e.target.classList.toggle('on', on);
+    applyFocusLock();
+    if (on) toast('專注模式開啟：長按右上角的 🔒 一秒半可解鎖', 3600);
   };
   $('#set-range').onchange = (e) => {
     const [lo, hi] = e.target.value.split(',').map(Number);
@@ -497,6 +518,57 @@ function updateMidiStatus() {
       .join('');
     sel.onchange = (e) => midiInput.select(e.target.value);
   }
+}
+
+/* ---------- 專注模式 ---------- */
+
+const UNLOCK_HOLD_MS = 1400;
+
+export function applyFocusLock() {
+  const on = !!progress.settings.focusLock;
+  document.body.classList.toggle('locked', on);
+  const btn = $('#btn-lock');
+  if (!btn) return;
+  btn.querySelector('.lock-ico').textContent = on ? '🔒' : '🔓';
+  btn.title = on ? '專注模式開啟中 — 長按這顆按鈕解鎖' : '開啟專注模式，把導覽收起來避免誤觸';
+  btn.setAttribute('aria-pressed', String(on));
+}
+
+function setupLockButton() {
+  const btn = $('#btn-lock');
+  let holdTimer = null;
+  let justUnlocked = false;
+
+  const cancelHold = () => {
+    clearTimeout(holdTimer);
+    holdTimer = null;
+    btn.classList.remove('holding');
+  };
+
+  btn.addEventListener('pointerdown', (e) => {
+    if (!progress.settings.focusLock) return;   // 沒鎖的時候用單擊就好
+    e.preventDefault();
+    btn.classList.add('holding');
+    holdTimer = setTimeout(() => {
+      cancelHold();
+      justUnlocked = true;                       // 擋掉隨後才觸發的 click，免得又鎖回去
+      progress.setSetting('focusLock', false);
+      applyFocusLock();
+      audio.sfx('good');
+      toast('已解鎖');
+    }, UNLOCK_HOLD_MS);
+  });
+  for (const type of ['pointerup', 'pointerleave', 'pointercancel']) {
+    btn.addEventListener(type, cancelHold);
+  }
+
+  btn.addEventListener('click', () => {
+    if (justUnlocked) { justUnlocked = false; return; }
+    if (progress.settings.focusLock) return;     // 鎖定中只能長按解鎖
+    progress.setSetting('focusLock', true);
+    applyFocusLock();
+    toast('專注模式開啟：導覽已收起，長按 🔒 一秒半可解鎖', 3600);
+  });
 }
 
 /* ---------- 主題與鍵盤設定 ---------- */
@@ -564,6 +636,14 @@ function boot() {
     if (e.code === 'Space') audio.setPedal(false);
   });
   window.addEventListener('blur', () => { audio.allNotesOff(); app.held.clear(); });
+
+  setupLockButton();
+  applyFocusLock();
+
+  // 擋掉 Safari 的雙指縮放，不然一不小心就把畫面放大卡住
+  for (const type of ['gesturestart', 'gesturechange', 'gestureend']) {
+    document.addEventListener(type, (e) => e.preventDefault(), { passive: false });
+  }
 
   refreshHeader();
   renderHome();

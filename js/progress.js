@@ -21,6 +21,7 @@ const DEFAULTS = {
     metronome: false,
     tempoScale: 1,
     waitMode: true,            // 等待模式：彈對了才前進
+    focusLock: false,          // 專注模式：把導覽入口收起來，避免小朋友誤觸
     range: [48, 84],
   },
 };
