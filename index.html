@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="description" content="NoteQuest 音符探險 — 給小朋友和大人的鋼琴教學 App">
+<meta name="theme-color" content="#0f172a">
+<title>NoteQuest 音符探險 · 鋼琴教室</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🎹</text></svg>">
+</head>
+<body data-theme="kid">
+
+<div id="boot" class="boot">
+  <div class="boot-card">
+    <div class="boot-logo">🎹</div>
+    <h1>NoteQuest<span>音符探險</span></h1>
+    <p class="boot-sub">給小朋友和大人的鋼琴教室</p>
+    <button id="boot-start" class="btn btn-primary btn-lg">開始彈琴</button>
+    <p class="boot-tip">點一下才能開啟聲音 · 支援滑鼠、觸控、電腦鍵盤與 MIDI 電鋼琴</p>
+  </div>
+</div>
+
+<header class="topbar">
+  <button class="icon-btn" id="btn-back" hidden aria-label="返回">←</button>
+  <div class="brand"><span class="brand-mark">🎹</span><span class="brand-name">NoteQuest</span></div>
+  <div class="topbar-stats">
+    <div class="stat" title="等級與經驗值">
+      <span class="stat-icon">⭐</span>
+      <span class="stat-body">
+        <b id="stat-level">Lv.1</b>
+        <span class="xpbar"><i id="xp-fill"></i></span>
+      </span>
+    </div>
+    <div class="stat" title="連續練習天數"><span class="stat-icon">🔥</span><b id="stat-streak">0</b></div>
+  </div>
+  <button class="icon-btn" id="btn-settings" aria-label="設定">⚙️</button>
+</header>
+
+<main id="screens">
+
+  <!-- 首頁 -->
+  <section class="screen active" id="screen-home">
+    <div class="mode-switch" role="tablist">
+      <button class="mode-btn" data-mode="kid" role="tab">🧒 小朋友模式</button>
+      <button class="mode-btn" data-mode="adult" role="tab">🎓 大人模式</button>
+    </div>
+
+    <div class="continue-card" id="continue-card"></div>
+
+    <div class="tile-grid">
+      <button class="tile" data-go="lessons"><span class="tile-icon">📚</span><b>課程</b><small>一步一步學</small></button>
+      <button class="tile" data-go="songs"><span class="tile-icon">🎵</span><b>練習曲</b><small>彈完整的歌</small></button>
+      <button class="tile" data-go="free"><span class="tile-icon">🎹</span><b>自由彈奏</b><small>隨便亂彈也很棒</small></button>
+      <button class="tile" data-go="ear"><span class="tile-icon">👂</span><b>聽力訓練</b><small>練出好耳朵</small></button>
+      <button class="tile" data-go="theory"><span class="tile-icon">🔬</span><b>音階和弦</b><small>看看音樂的骨架</small></button>
+      <button class="tile" data-go="stats"><span class="tile-icon">🏅</span><b>我的成果</b><small>星星與貼紙</small></button>
+    </div>
+  </section>
+
+  <!-- 課程列表 -->
+  <section class="screen" id="screen-lessons">
+    <h2 class="screen-title">課程</h2>
+    <div id="unit-list" class="unit-list"></div>
+  </section>
+
+  <!-- 曲目列表 -->
+  <section class="screen" id="screen-songs">
+    <h2 class="screen-title">練習曲</h2>
+    <div class="filter-row" id="song-filter"></div>
+    <div id="song-list" class="song-list"></div>
+  </section>
+
+  <!-- 演奏 / 課程進行中 -->
+  <section class="screen screen-play" id="screen-play">
+    <div class="play-head">
+      <div class="play-title"><h2 id="play-title">—</h2><span id="play-sub"></span></div>
+      <div class="play-hud">
+        <div class="hud-item"><small>準確度</small><b id="hud-acc">—</b></div>
+        <div class="hud-item"><small>連擊</small><b id="hud-combo">0</b></div>
+        <div class="hud-item"><small>分數</small><b id="hud-score">0</b></div>
+      </div>
+    </div>
+    <div class="play-progress"><i id="play-progress-fill"></i></div>
+    <div class="play-controls" id="play-controls"></div>
+    <div id="play-staff" class="staff-panel" hidden></div>
+    <div id="play-prompt" class="play-prompt"></div>
+  </section>
+
+  <!-- 自由彈奏 -->
+  <section class="screen" id="screen-free">
+    <h2 class="screen-title">自由彈奏</h2>
+    <div class="free-panel">
+      <div class="chord-readout" id="chord-readout"><b>—</b><small>彈幾個音看看，我會告訴你這是什麼和弦</small></div>
+      <div class="control-row" id="free-controls"></div>
+      <div id="free-staff" class="staff-panel"></div>
+    </div>
+  </section>
+
+  <!-- 聽力訓練 -->
+  <section class="screen" id="screen-ear">
+    <h2 class="screen-title">聽力訓練</h2>
+    <div id="ear-body" class="ear-body"></div>
+  </section>
+
+  <!-- 音階和弦實驗室 -->
+  <section class="screen" id="screen-theory">
+    <h2 class="screen-title">音階與和弦</h2>
+    <div id="theory-body" class="theory-body"></div>
+  </section>
+
+  <!-- 成果 -->
+  <section class="screen" id="screen-stats">
+    <h2 class="screen-title">我的成果</h2>
+    <div id="stats-body"></div>
+  </section>
+
+  <!-- 設定 -->
+  <section class="screen" id="screen-settings">
+    <h2 class="screen-title">設定</h2>
+    <div id="settings-body"></div>
+  </section>
+
+</main>
+
+<!-- 鍵盤底座（所有畫面共用同一台鋼琴） -->
+<div id="dock" class="dock" hidden>
+  <canvas id="fall-canvas" class="fall-canvas"></canvas>
+  <div id="dock-hint" class="dock-hint"></div>
+  <div id="keyboard" class="keyboard"></div>
+</div>
+
+<nav class="tabbar" id="tabbar">
+  <button data-go="home" class="active"><span>🏠</span>首頁</button>
+  <button data-go="lessons"><span>📚</span>課程</button>
+  <button data-go="songs"><span>🎵</span>曲目</button>
+  <button data-go="free"><span>🎹</span>彈奏</button>
+</nav>
+
+<div id="overlay" class="overlay" hidden></div>
+<div id="toast" class="toast" hidden></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
