@@ -4,7 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="description" content="NoteQuest 音符探險 — 給小朋友和大人的鋼琴教學 App">
-<meta name="theme-color" content="#0f172a">
+<meta name="theme-color" content="#fff7ed">
+
+<!-- 加到主畫面後以全螢幕（standalone）啟動，不顯示網址列與工具列 -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="NoteQuest">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>NoteQuest 音符探險 · 鋼琴教室</title>
 <link rel="stylesheet" href="css/style.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🎹</text></svg>">
@@ -34,6 +42,9 @@
     </div>
     <div class="stat" title="連續練習天數"><span class="stat-icon">🔥</span><b id="stat-streak">0</b></div>
   </div>
+  <button class="icon-btn lock-btn" id="btn-lock" aria-label="專注模式">
+    <span class="hold"></span><span class="lock-ico">🔓</span>
+  </button>
   <button class="icon-btn" id="btn-settings" aria-label="設定">⚙️</button>
 </header>
 

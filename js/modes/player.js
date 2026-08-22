@@ -126,8 +126,8 @@ class Player {
     demo.onclick = () => this.startDemo();
     c.appendChild(demo);
 
-    // 速度
-    const speed = el('div', 'ctl-group');
+    // 速度（屬於設定，專注模式會收起來）
+    const speed = el('div', 'ctl-group ctl-lockable');
     speed.innerHTML = '<span>速度</span>';
     const range = el('input');
     range.type = 'range'; range.min = '0.4'; range.max = '1.3'; range.step = '0.05';
@@ -143,7 +143,7 @@ class Player {
 
     // 手別
     if (this.song.lh) {
-      const hands = el('div', 'ctl-group');
+      const hands = el('div', 'ctl-group ctl-lockable');
       hands.innerHTML = '<span>練習</span>';
       const sel = el('select');
       sel.innerHTML = `
@@ -157,7 +157,7 @@ class Player {
     }
 
     // 等待模式
-    this.btnWait = el('button', 'btn' + (this.opts.waitMode ? ' on' : ''), '⏸ 等待模式');
+    this.btnWait = el('button', 'btn ctl-lockable' + (this.opts.waitMode ? ' on' : ''), '⏸ 等待模式');
     this.btnWait.onclick = () => {
       this.opts.waitMode = !this.opts.waitMode;
       progress.setSetting('waitMode', this.opts.waitMode);
@@ -169,7 +169,7 @@ class Player {
 
     // 節拍器
     this.metro = progress.settings.metronome;
-    this.btnMetro = el('button', 'btn' + (this.metro ? ' on' : ''), '🥁 節拍器');
+    this.btnMetro = el('button', 'btn ctl-lockable' + (this.metro ? ' on' : ''), '🥁 節拍器');
     this.btnMetro.onclick = () => {
       this.metro = !this.metro;
       progress.setSetting('metronome', this.metro);
@@ -178,7 +178,7 @@ class Player {
     c.appendChild(this.btnMetro);
 
     // 樂譜
-    this.btnStaff = el('button', 'btn' + (progress.settings.showStaff ? ' on' : ''), '🎼 樂譜');
+    this.btnStaff = el('button', 'btn ctl-lockable' + (progress.settings.showStaff ? ' on' : ''), '🎼 樂譜');
     this.btnStaff.onclick = () => {
       progress.setSetting('showStaff', !progress.settings.showStaff);
       this.btnStaff.classList.toggle('on', progress.settings.showStaff);

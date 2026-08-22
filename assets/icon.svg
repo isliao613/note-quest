@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fb923c"/>
+      <stop offset="0.55" stop-color="#f97316"/>
+      <stop offset="1" stop-color="#ec4899"/>
+    </linearGradient>
+    <linearGradient id="key" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f4ece4"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" fill="url(#bg)"/>
+
+  <!-- 琴鍵 -->
+  <g transform="translate(96,148)">
+    <rect x="0" y="0" width="320" height="216" rx="16" fill="url(#key)"/>
+
+    <!-- 白鍵分隔線 -->
+    <g stroke="#ddd0c2" stroke-width="4" stroke-linecap="round">
+      <line x1="64"  y1="10" x2="64"  y2="206"/>
+      <line x1="128" y1="10" x2="128" y2="206"/>
+      <line x1="192" y1="10" x2="192" y2="206"/>
+      <line x1="256" y1="10" x2="256" y2="206"/>
+    </g>
+
+    <!-- 黑鍵 -->
+    <g fill="#2b2320">
+      <rect x="45"  y="0" width="38" height="132" rx="9"/>
+      <rect x="109" y="0" width="38" height="132" rx="9"/>
+      <rect x="237" y="0" width="38" height="132" rx="9"/>
+    </g>
+
+    <!-- 中央 C 的小圓點，跟 App 裡的標記呼應 -->
+    <circle cx="32" cy="176" r="11" fill="#f97316"/>
+  </g>
+</svg>

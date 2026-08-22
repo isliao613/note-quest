@@ -12,7 +12,13 @@
 ### 方式一：線上打開
 
 直接連 <https://isliao613.github.io/note-quest/>，手機、平板、電腦都可以。
-在 iPad 上用 Safari 開啟後選「加入主畫面」，用起來就跟一般 App 一樣。
+
+**在 iPad / iPhone 上裝成全螢幕 App**：用 **Safari** 開啟 → 分享 → **加入主畫面**。
+之後從主畫面點圖示啟動，會以 standalone 模式全螢幕執行，**沒有網址列也沒有工具列**，
+只剩系統狀態列（時間與電量），而且狀態列底色會跟著小朋友／大人模式自動切換。
+
+> 一定要用 Safari。Chrome、Edge 等第三方瀏覽器在 iOS 上加到主畫面只會存成書籤，
+> 點開仍然會帶著瀏覽器介面。Android 則用 Chrome 的「安裝應用程式」。
 
 ### 方式二：離線單檔
 
@@ -182,10 +188,49 @@ js/
     free.js           自由彈奏（和弦辨識、錄音回放）
     theorylab.js      音階與和弦實驗室
     editor.js         自訂曲目編輯器
+manifest.webmanifest  PWA 設定（全螢幕啟動、圖示）
+assets/               App 圖示（icon.svg 為原始檔）
 tools/build.mjs       單檔打包腳本
+tools/make-icons.mjs  從 icon.svg 產生各尺寸 PNG
 .github/workflows/
   pages.yml           推上 main 時自動部署到 GitHub Pages
 ```
+
+## 給小朋友用的防誤觸
+
+平板上最常見的困擾是小手一滑就跳到別的畫面。App 做了兩層處理：
+
+**手勢硬化**（永遠開著，不用設定）
+關掉雙擊縮放、雙指縮放、長按選取與拷貝選單，琴鍵區域也不會因為手指滑動而捲動畫面。
+
+**專注模式**（右上角 🔓 按一下開啟）
+把所有會離開目前活動的入口收起來 —— 返回鍵、設定鍵、底部分頁，
+以及演奏畫面裡屬於設定性質的控制項（速度、單雙手、等待模式、節拍器、樂譜）。
+留下的只有開始、重來、示範和琴鍵，小朋友怎麼點都跳不出去。
+
+解鎖要**長按 🔒 一秒半**，單擊沒有作用，小朋友不容易誤解。設定會記住，重新開啟 App 仍然鎖著。
+
+> 想連整台 iPad 都鎖住（連 home、通知、其他 App 都碰不到），
+> 用 iOS 內建的**引導式取用**：設定 → 輔助使用 → 引導式取用打開後，
+> 在 App 裡連按三下側邊鍵鎖定，再連按三下並輸入密碼解除。
+
+---
+
+## 全螢幕 / 安裝
+
+`manifest.webmanifest` 宣告 `display: standalone`，並搭配 Apple 的
+`apple-mobile-web-app-capable` 讓舊版 iOS 也能全螢幕啟動。
+圖示由 `assets/icon.svg` 產生，要重新產生時：
+
+```bash
+npm i -D playwright
+node tools/make-icons.mjs      # 產生 assets/icon-180/192/512 與 maskable 版本
+```
+
+單檔版（`notequest.html`）沒有相鄰檔案可以載，打包時會自動移除 manifest 連結、
+把圖示改成內嵌的 data URI，一樣可以在 iOS 上全螢幕啟動。
+
+---
 
 ## 部署到 GitHub Pages
 

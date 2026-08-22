@@ -74,7 +74,18 @@ body {
   background-attachment: fixed;
   display: flex; flex-direction: column;
   transition: background-color .35s ease, color .35s ease;
+
+  /* 觸控硬化：關掉雙擊縮放、長按選取與拷貝選單，避免小朋友誤觸後畫面亂跳。
+     touch-action 會沿著祖先鏈取交集，所以寫在 body 就整頁生效，
+     .keyboard 的 touch-action: none 仍然可以再收得更緊。 */
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
+
+/* 只有真正要打字的地方才允許選取 */
+input, textarea { -webkit-user-select: text; user-select: text; }
 
 button { font-family: inherit; color: inherit; cursor: pointer; }
 h1, h2, h3 { margin: 0; }
@@ -120,6 +131,22 @@ body[data-theme="kid"] .brand-name { color: var(--accent); }
   display: grid; place-items: center; transition: transform .12s ease, background .2s;
 }
 .icon-btn:active { transform: scale(.92); }
+
+/* 專注模式的鎖定鈕：解鎖要長按，填色會由下往上長 */
+.lock-btn { position: relative; overflow: hidden; }
+.lock-btn .hold {
+  position: absolute; inset: 0; background: var(--accent); opacity: .45;
+  transform: scaleY(0); transform-origin: bottom; pointer-events: none;
+}
+.lock-btn.holding .hold { transform: scaleY(1); transition: transform 1.4s linear; }
+.lock-btn .lock-ico { position: relative; font-size: .95rem; }
+body.locked .lock-btn { border-color: var(--accent); }
+
+/* 鎖定時把所有會離開目前活動的入口收起來 */
+body.locked #btn-back,
+body.locked #btn-settings,
+body.locked .tabbar,
+body.locked .ctl-lockable { display: none !important; }
 
 /* ---------- 畫面容器 ---------- */
 #screens { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 92px; }
