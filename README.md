@@ -3,15 +3,22 @@
 給**小朋友**和**大人**的鋼琴教學 App。純網頁、零依賴、可離線使用，
 用滑鼠、觸控、電腦鍵盤都能彈，接上 MIDI 電鋼琴也能直接上課。
 
+**▶️ 線上試玩：<https://isliao613.github.io/note-quest/>**
+
 ---
 
 ## 快速開始
 
-### 方式一：直接打開（最簡單）
+### 方式一：線上打開
 
-用瀏覽器打開 **`notequest.html`** 就好，不需要安裝任何東西。
+直接連 <https://isliao613.github.io/note-quest/>，手機、平板、電腦都可以。
+在 iPad 上用 Safari 開啟後選「加入主畫面」，用起來就跟一般 App 一樣。
 
-### 方式二：從原始碼執行
+### 方式二：離線單檔
+
+下載 **`notequest.html`** 用瀏覽器打開，不需要網路也不需要安裝任何東西。
+
+### 方式三：從原始碼執行
 
 原始碼用了 ES modules，`file://` 會被瀏覽器擋住，需要一個本機伺服器：
 
@@ -176,6 +183,8 @@ js/
     theorylab.js      音階與和弦實驗室
     editor.js         自訂曲目編輯器
 tools/build.mjs       單檔打包腳本
+.github/workflows/
+  pages.yml           推上 main 時自動部署到 GitHub Pages
 ```
 
 ## 瀏覽器需求
