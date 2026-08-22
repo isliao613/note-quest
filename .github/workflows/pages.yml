@@ -25,11 +25,14 @@ jobs:
       - name: 取出程式碼
         uses: actions/checkout@v4
 
+      # 一次性設定：Settings -> Pages -> Source 選「GitHub Actions」
+      #
+      # 這裡刻意不加 enablement: true。建立 Pages 站台的 API 需要 repo admin
+      # 權限，而 workflow 的 GITHUB_TOKEN 拿不到，只會失敗在
+      #   Create Pages site failed. Error: Resource not accessible by integration
+      # 站台開好之後，這一步就只是讀取設定，不需要額外權限。
       - name: 設定 Pages
         uses: actions/configure-pages@v5
-        with:
-          # 若 repo 還沒開啟 Pages，這裡會自動幫忙開
-          enablement: true
 
       - name: 整理要發佈的檔案
         run: |
