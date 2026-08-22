@@ -1,3 +1,5 @@
+import { loadCustomSongs } from './customsongs.js';
+
 /* songs.js — 曲庫（全部為傳統民謠或公有領域的古典作品）
  *
  * 記譜方式：[midi, beats] 的陣列，midi 為 null 表示休止符。
@@ -7,6 +9,8 @@
 const C4 = 60, D4 = 62, E4 = 64, F4 = 65, G4 = 67, A4 = 69, B4 = 71;
 const C5 = 72, D5 = 74, E5 = 76, F5 = 77, G5 = 79, A5 = 81, B5 = 83;
 const C3 = 48, D3 = 50, E3 = 52, F3 = 53, G3 = 55, A3 = 57, B3 = 59;
+const G2 = 43, A2 = 45, B2 = 47;
+const FS4 = 66, FS5 = 78;   // F#4 / F#5
 
 export const SONGS = [
   {
@@ -194,6 +198,38 @@ export const SONGS = [
     ],
   },
   {
+    id: 'minuet-g',
+    title: 'G 大調小步舞曲',
+    subtitle: 'Bach / Petzold — Minuet in G, BWV Anh.114',
+    level: 3, audience: 'adult', tempo: 120, timeSig: [3, 4], keySig: 1,
+    tags: ['古典', '三拍子', '雙手', '經典教材'],
+    hint: '巴洛克的舞曲，每小節第一拍稍微強一點，八分音符要彈得輕巧均勻。左手是簡化的和聲。',
+    rh: [
+      [D5,1],[G4,0.5],[A4,0.5],[B4,0.5],[C5,0.5],
+      [D5,1],[G4,1],[G4,1],
+      [E5,1],[C5,0.5],[D5,0.5],[E5,0.5],[FS5,0.5],
+      [G5,1],[G4,1],[G4,1],
+      [C5,1],[D5,0.5],[C5,0.5],[B4,0.5],[A4,0.5],
+      [B4,1],[C5,0.5],[B4,0.5],[A4,0.5],[G4,0.5],
+      [FS4,1],[G4,0.5],[A4,0.5],[B4,0.5],[G4,0.5],
+      [A4,3],
+      [D5,1],[G4,0.5],[A4,0.5],[B4,0.5],[C5,0.5],
+      [D5,1],[G4,1],[G4,1],
+      [E5,1],[C5,0.5],[D5,0.5],[E5,0.5],[FS5,0.5],
+      [G5,1],[G4,1],[G4,1],
+      [C5,1],[D5,0.5],[C5,0.5],[B4,0.5],[A4,0.5],
+      [B4,1],[C5,0.5],[B4,0.5],[A4,0.5],[G4,0.5],
+      [A4,1],[B4,0.5],[A4,0.5],[G4,0.5],[FS4,0.5],
+      [G4,3],
+    ],
+    lh: [
+      [[G2,D3],3],[[G2,D3],3],[[C3,G3],3],[[G2,D3],3],
+      [[C3,G3],3],[[G2,D3],3],[[D3,A3],3],[[D3,A3],3],
+      [[G2,D3],3],[[G2,D3],3],[[C3,G3],3],[[G2,D3],3],
+      [[C3,G3],3],[[G2,D3],3],[[D3,A3],3],[[G2,D3],3],
+    ],
+  },
+  {
     id: 'prelude-c',
     title: '前奏曲 第一號',
     subtitle: 'J.S. Bach — BWV 846（開頭）',
@@ -263,6 +299,7 @@ export const SONGS = [
 
 /* ---------- 展開成有時間軸的音符序列 ---------- */
 
+
 /**
  * 把 [midi, beats] 的緊湊寫法展開成 { midis, hand, start, beats, lyric, finger }
  * start 以「拍」為單位。
@@ -321,4 +358,9 @@ export function songLength(notes) {
   return notes.reduce((m, n) => Math.max(m, n.start + n.beats), 0);
 }
 
-export const getSong = (id) => SONGS.find((s) => s.id === id);
+/** 內建曲目 + 使用者自己新增的曲目 */
+export function allSongs() {
+  return [...SONGS, ...loadCustomSongs()];
+}
+
+export const getSong = (id) => allSongs().find((s) => s.id === id);

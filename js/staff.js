@@ -19,6 +19,17 @@ const STEP_G2 = 2 * 7 + 4;   // 低音譜表最下線 G2
 const SHARP_KEY_STEPS_TREBLE = [38, 35, 39, 36, 33, 37, 34];        // F5 C5 G5 D5 A4 E5 B4
 const FLAT_KEY_STEPS_TREBLE  = [34, 37, 33, 36, 32, 35, 31];        // B4 E5 A4 D5 G4 C5 F4
 
+/* 調號的升降順序，以音級表示（0=C 1=D 2=E 3=F 4=G 5=A 6=B） */
+const SHARP_ORDER_STEPS = [3, 0, 4, 1, 5, 2, 6];   // F C G D A E B
+const FLAT_ORDER_STEPS  = [6, 2, 5, 1, 4, 0, 3];   // B E A D G C F
+
+/** 這個調號已經幫哪些音級加了升降記號 */
+function alteredByKey(keySig) {
+  const n = Math.abs(keySig);
+  const order = keySig > 0 ? SHARP_ORDER_STEPS : FLAT_ORDER_STEPS;
+  return new Set(order.slice(0, n));
+}
+
 const svgEl = (name, attrs = {}) => {
   const el = document.createElementNS('http://www.w3.org/2000/svg', name);
   for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
@@ -279,9 +290,13 @@ export class Staff {
     const bottomLine = off + STAFF_H;
     const hollow = duration === 'w' || duration === 'h';
 
+    const altered = alteredByKey(this.opts.keySig || 0);
     midis.forEach((midi, i) => {
       const y = ys[i];
-      const { acc } = toStep(midi, this.useFlats);
+      const { step, acc } = toStep(midi, this.useFlats);
+      // 調號已經標過的音就不重複標臨時記號
+      const redundant = acc !== 0 && altered.has(((step % 7) + 7) % 7)
+        && Math.sign(acc) === Math.sign(this.opts.keySig || 0);
 
       // 加線
       if (y < topLine - 1) {
@@ -294,7 +309,7 @@ export class Staff {
         }
       }
 
-      if (acc !== 0) g.appendChild(accidentalGroup(acc, x - 17 - i * 2, y));
+      if (acc !== 0 && !redundant) g.appendChild(accidentalGroup(acc, x - 17 - i * 2, y));
 
       g.appendChild(svgEl('ellipse', {
         cx: x, cy: y, rx: 7.2, ry: 5.2,

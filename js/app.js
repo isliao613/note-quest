@@ -4,7 +4,7 @@ import { audio } from './audio.js';
 import { midiInput } from './midi.js';
 import { progress } from './progress.js';
 import { PianoKeyboard } from './keyboard.js';
-import { SONGS, getSong } from './songs.js';
+import { SONGS, allSongs, getSong } from './songs.js';
 import { UNITS, unitsFor, getLesson, nextLesson, isUnlocked } from './curriculum.js';
 import { noteName, labelFor } from './theory.js';
 
@@ -13,6 +13,7 @@ import { startLesson } from './modes/lesson.js';
 import { mountFreePlay, unmountFreePlay } from './modes/free.js';
 import { mountEarTraining } from './modes/ear.js';
 import { mountTheoryLab } from './modes/theorylab.js';
+import { mountEditor } from './modes/editor.js';
 
 /* ---------- 小工具 ---------- */
 export const $ = (sel, root = document) => root.querySelector(sel);
@@ -109,7 +110,7 @@ export function noteOff(midi, source = 'screen') {
 
 /* ---------- 路由 ---------- */
 
-const SCREEN_IDS = ['home', 'lessons', 'songs', 'play', 'free', 'ear', 'theory', 'stats', 'settings'];
+const SCREEN_IDS = ['home', 'lessons', 'songs', 'play', 'free', 'ear', 'theory', 'stats', 'settings', 'editor'];
 const LIST_SCREENS = new Set(['home', 'lessons', 'songs', 'stats', 'settings']);
 
 export function go(name, opts = {}) {
@@ -139,6 +140,7 @@ export function go(name, opts = {}) {
     case 'free':     mountFreePlay(); break;
     case 'ear':      mountEarTraining(opts); break;
     case 'theory':   mountTheoryLab(); break;
+    case 'editor':   mountEditor(opts.songId ?? null); break;
     case 'play':     break;   // 由 player / lesson 自行處理
   }
 }
@@ -232,7 +234,7 @@ let songFilter = 'all';
 function renderSongs() {
   const mode = progress.data.mode;
   const filters = [
-    ['all', '全部'], ['1', '入門'], ['2', '初級'], ['3', '中級'], ['4', '進階'],
+    ['all', '全部'], ['1', '入門'], ['2', '初級'], ['3', '中級'], ['4', '進階'], ['custom', '我的曲子'],
   ];
   const fr = $('#song-filter');
   fr.innerHTML = '';
@@ -241,33 +243,52 @@ function renderSongs() {
     b.onclick = () => { songFilter = key; renderSongs(); };
     fr.appendChild(b);
   }
+  const add = el('button', 'btn btn-primary', '＋ 新增自己的曲子');
+  add.onclick = () => go('editor');
+  fr.appendChild(add);
 
   const list = $('#song-list');
   list.innerHTML = '';
-  const pool = SONGS
-    .filter((s) => s.audience === 'both' || s.audience === mode)
-    .filter((s) => songFilter === 'all' || String(s.level) === songFilter)
-    .sort((a, b) => a.level - b.level);
+  const pool = allSongs()
+    .filter((s) => s.custom || s.audience === 'both' || s.audience === mode)
+    .filter((s) => songFilter === 'all'
+      || (songFilter === 'custom' ? s.custom : String(s.level) === songFilter))
+    .sort((a, b) => (a.custom === b.custom ? a.level - b.level : a.custom ? 1 : -1));
 
   if (!pool.length) {
-    list.appendChild(el('p', 'muted', '這個難度還沒有曲子，換一個看看吧。'));
+    const empty = el('div', 'card', songFilter === 'custom'
+      ? '<b>還沒有自訂曲目</b><p class="muted" style="font-size:.82rem;margin:6px 0 0">用簡譜把想彈的旋律打進去，馬上就能用落下音符練習。</p>'
+      : '<b>這個難度還沒有曲子</b><p class="muted" style="font-size:.82rem;margin:6px 0 0">換一個難度看看吧。</p>');
+    list.appendChild(empty);
     return;
   }
 
   for (const song of pool) {
     const best = progress.bestFor(song.id);
-    const card = el('button', 'song-card', `
-      <h3>${esc(song.title)}</h3>
+    const card = el('div', 'song-card', `
+      <h3>${esc(song.title)}${song.custom ? ' <span class="pill">自訂</span>' : ''}</h3>
       <div class="sub">${esc(song.subtitle || '')}</div>
       <div class="level-dots">${[1,2,3,4,5].map((i) => `<i class="${i <= song.level ? 'on' : ''}"></i>`).join('')}</div>
       ${best ? `<span class="pill" style="margin-left:8px">${starStr(best.stars)} ${Math.round(best.accuracy * 100)}%</span>` : ''}
       <div class="song-tags">${(song.tags || []).map((t) => `<span>${esc(t)}</span>`).join('')}</div>`);
-    card.onclick = () => {
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+
+    const open = () => {
       progress.touchPractice();
       refreshHeader();
       go('play');
-      startSong(song, { hands: 'right' });   // 先從單手開始，玩家可在播放畫面切換成雙手
+      startSong(song, { hands: 'right' });   // 先從單手開始，可在播放畫面切換成雙手
     };
+    card.onclick = open;
+    card.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } };
+
+    if (song.custom) {
+      const edit = el('button', 'card-edit', '✏️');
+      edit.title = '編輯這首曲子';
+      edit.onclick = (e) => { e.stopPropagation(); go('editor', { songId: song.id }); };
+      card.appendChild(edit);
+    }
     list.appendChild(card);
   }
 }

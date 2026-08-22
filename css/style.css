@@ -198,7 +198,11 @@ body[data-theme="adult"] .mode-btn.active { background: var(--accent); color: #0
 /* ---------- 曲目 ---------- */
 .filter-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
 .song-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 11px; }
-.song-card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 15px; text-align: left; transition: transform .16s, box-shadow .2s; }
+.song-card { position: relative; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 15px; text-align: left; cursor: pointer; transition: transform .16s, box-shadow .2s; }
+.song-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.card-edit { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 9px;
+  border: 1px solid var(--border); background: var(--panel-2); font-size: .82rem; display: grid; place-items: center; }
+.card-edit:hover { border-color: var(--accent); }
 .song-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
 .song-card h3 { font-size: 1rem; }
 .song-card .sub { font-size: .76rem; color: var(--text-dim); margin: 2px 0 9px; }
@@ -412,4 +416,39 @@ body[data-theme="adult"] .quiz-explain { background: var(--panel-2); border: 1px
   .keyboard { height: 132px; }
   .dock.with-fall .fall-canvas { height: clamp(150px, 26vh, 220px); }
   :root { --dock-h: 168px; }
+}
+
+
+/* ---------- 自訂曲目編輯器 ---------- */
+.editor-form { display: flex; flex-direction: column; gap: 13px; }
+.field { display: flex; flex-direction: column; gap: 5px; flex: 0 0 auto; }
+.field-row .field { flex: 1 1 150px; }
+.field > span { font-size: .78rem; font-weight: 700; color: var(--text-dim); }
+.field input, .field select, .field textarea {
+  font-family: inherit; font-size: .9rem; padding: 10px 12px; border-radius: 11px;
+  border: 1px solid var(--border); background: var(--panel-2); color: var(--text); width: 100%;
+}
+.field textarea {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: .95rem; line-height: 1.8; resize: vertical; letter-spacing: .04em;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none; border-color: var(--accent);
+}
+.field-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.ed-status {
+  font-size: .82rem; line-height: 1.6; padding: 11px 13px; border-radius: 11px;
+  background: var(--panel-2); border: 1px solid var(--border); color: var(--text-dim);
+}
+.ed-status.ok  { border-color: color-mix(in srgb, var(--ok) 45%, var(--border)); color: var(--text); }
+.ed-status.bad { border-color: color-mix(in srgb, var(--bad) 55%, var(--border)); color: var(--bad); }
+.ed-status .warn { color: var(--warn); }
+.syntax-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+.syntax-table td { padding: 6px 4px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.syntax-table td:first-child { width: 34%; white-space: nowrap; }
+.syntax-table tr:last-child td { border-bottom: none; }
+.syntax-table code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: var(--panel-2); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 6px; font-size: .84em;
 }
